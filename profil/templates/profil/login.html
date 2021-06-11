@@ -1,0 +1,37 @@
+{% extends 'product/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load static i18n %}
+
+{% block title %}{% trans 'Авторизація' %}{% endblock %}
+
+{% block style %}
+     <link rel="stylesheet" type="text/css" href="{% static 'product/css/header_footer.css' %}">
+     <link rel="stylesheet" type="text/css" href="{% static 'profil/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+		<div class="content">
+            <div class="login1">
+
+                {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert">
+                                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                <h1>{% trans 'Авторизація' %}</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.username }}<br>
+                    {{ form.password }}<br>
+                    <span class="icon" id="password_icon" onclick="showPassword()"></span>
+                    <input type="submit" class="button-login" value="{% trans 'Увійти' %}">
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript" src="{% static 'profil/js/login.js' %}"></script>
+{% endblock %}

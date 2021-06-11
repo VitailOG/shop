@@ -1,0 +1,101 @@
+{% extends 'product/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load static i18n %}
+
+{% block title %}{% trans 'Особистий кабінет' %}{% endblock %}
+
+{% block style %}
+     <link rel="stylesheet" type="text/css" href="{% static 'profil/css/profil.css' %}">
+     <link rel="stylesheet" type="text/css" href="{% static 'product/css/header_footer.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="main">
+        <h1 class="main-date">{% trans 'Замовлення користувача' %} {{ request.user }}</h1><br>
+        {% if not orders.count %}
+            <p class="no-buying">{% trans 'Замолень немає' %} :( <a href="{% url 'home' %}">{% trans 'Почніть здійснювати покупки' %}</a></p>
+        {% else %}
+            <table class="table-order">
+                <thead>
+                    <th>{% trans 'Номер' %}</th>
+                    <th>{% trans 'Дата' %}</th>
+                    <th>{% trans 'Сума замовлень' %}</th>
+                    <th>{% trans 'Товари' %}</th>
+                    <th>{% trans 'Детальніше' %}</th>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr class="info">
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.order_date|date:"d/m/Y" }}</td>
+                            {% if order.cart.discount %}
+                                <td>{{ order.cart.discount }} {% trans 'грн' %}</td>
+                            {% else %}
+                                <td>{{ order.cart.all_price }} {% trans 'грн' %}</td>
+                            {% endif %}
+                            <td>
+                                <ul>
+                                    <li>
+                                        {% for i in order.cart.products.all %}
+                                            <li>{{ i.product.title }} x {{ i.count }}</li>
+                                        {% endfor %}
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>
+                                <a  class="detail-order" onclick="func('block', 'modal{{ order.id}}')">{% trans 'Детальніше' %}</a>
+                                <div class="grey"></div>
+                                <div class="model modal{{ order.id }}">
+                                    <h5 class="detail-order-title">{% trans 'Деталізація замолення' %}</h5>
+                                    <table class="detail-order-window">
+                                        <thead>
+                                        <tr>
+                                            <th class="title-detail-product">{% trans 'Назва' %}</th>
+                                            <th class="title-detail-product">{% trans 'Картинка' %}</th>
+                                            <th class="title-detail-product">{% trans 'Ціна' %}</th>
+                                            <th class="title-detail-product">{% trans 'Кількість' %}</th>
+                                            <th class="title-detail-product">{% trans 'Загальна ціна' %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for i in order.cart.products.all %}
+                                                <tr>
+                                                    <td class="value">{{ i.product.title }}</td>
+                                                    <td class="value"><img src="{{ i.product.image.url }}" style="width: 35px;"></td>
+                                                    <td class="value">{{ i.product.price }} грн.</td>
+                                                    <td class="value">{{ i.count }}</td>
+                                                    <td class="value">{{ i.all_price }} {% trans 'грн' %}.</td>
+                                                </tr>
+                                            {% endfor %}
+                                            <tr class="whole-price">
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>{% trans 'Загальна вартість' %}</td>
+                                                {% if order.cart.discount %}
+                                                    <td>{{ order.cart.discount }} {% trans 'грн' %}.</td>
+                                                {% else %}
+                                                    <td>{{ order.cart.all_price }} {% trans 'грн' %}.</td>
+                                                {% endif %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="date-customer">
+                                        <h4 class="date-title">{% trans 'Дані про покупця' %}</h4>
+                                        <p>{% trans "Ім'я" %}: {{ order.first_name }}</p>
+                                        <p>{% trans 'Прізвище' %}: {{ order.last_name }}</p>
+                                        <p>{% trans 'Телефон' %}: {{ order.phone }}</p>
+                                        <p>{% trans 'Адрес' %}: {{ order.address }}</p>
+                                    </div>
+                                    <a class="close" onclick="func('none', 'modal{{ order.id }}')">{% trans 'Закрити' %}</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+    <script type="text/javascript" src="{% static 'profil/js/profil.js' %}"></script>
+{% endblock %}
