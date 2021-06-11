@@ -44,7 +44,7 @@ class Product(models.Model):
         return self.quantity_in_stock > 0
 
     def __str__(self):
-        return f'Продукт {self.title} Категорії {self.category.name}.'
+        return f'Продукт {self.title} Категорії {self.category.name}'
 
     def get_brand_product(self):
         return Product.objects.filter(
