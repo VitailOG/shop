@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
     'debug_toolbar',
     'rest_framework',
+    'django_filters',
 
     # api in processing
     'api.apps.ApiConfig',

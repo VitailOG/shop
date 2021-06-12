@@ -8,46 +8,49 @@ from product.models import (Category,
 from rest_framework.serializers import ModelSerializer
 
 
-class CategorySerializers(ModelSerializer):
+class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name', 'slug')
+        fields = ('id', 'name', 'slug')
 
 
-class ReviewSerializers(ModelSerializer):
-    class Meta:
-        model = Review
-        fields = '__all__'
-
-
-class ShortImgProductSerializers(ModelSerializer):
+class ImageProductSerializers(ModelSerializer):
     class Meta:
         model = ShortImgProduct
         fields = ('img',)
 
 
-class SpecSerializers(ModelSerializer):
+class SpecProductSerializer(ModelSerializer):
+
     class Meta:
         model = Spec
         fields = ('key', 'value')
 
 
-class ProductDetailSerializers(ModelSerializer):
-    """Detail product"""
-    category = CategorySerializers()
-    review = ReviewSerializers(many=True)
-    mdl = ShortImgProductSerializers(many=True)
-    spec = SpecSerializers(many=True)
+class ReviewProductSerializer(ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = ('review', 'date', 'user')
+
+
+class ProductSerializer(ModelSerializer):
+
+    category = CategorySerializer()
 
     class Meta:
         model = Product
         fields = '__all__'
 
 
-class ProductSerializers(ModelSerializer):
-    """Product"""
-    category = CategorySerializers()
+class ProductDetailSerializer(ModelSerializer):
+
+    category = CategorySerializer()
+    mdl = ImageProductSerializers(many=True)
+    spec = SpecProductSerializer(many=True)
+    review = ReviewProductSerializer(many=True)
 
     class Meta:
         model = Product
         fields = '__all__'
+        lookup_field = 'slug'

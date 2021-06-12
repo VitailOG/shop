@@ -1,11 +1,10 @@
 from django.urls import path
-from api.product.views import CategoryAPI, ProductAPI
+from api.product.views import ProductAPI
 from rest_framework.routers import DefaultRouter
 
 
 router = DefaultRouter()
-router.register('category-api', CategoryAPI)
-router.register('product', ProductAPI)
+router.register('product', ProductAPI, basename='product')
 
 urlpatterns = [
 ]
