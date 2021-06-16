@@ -31,7 +31,8 @@ class ReviewProductSerializer(ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('review', 'date', 'user')
+        # fields = ('review', 'date', 'user')
+        fields = ('id', 'review', 'date', 'product', 'user')
 
 
 class ProductSerializer(ModelSerializer):
@@ -54,3 +55,5 @@ class ProductDetailSerializer(ModelSerializer):
         model = Product
         fields = '__all__'
         lookup_field = 'slug'
+
+

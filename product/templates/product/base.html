@@ -1,6 +1,8 @@
 {% load static %}
 {% load i18n %}
 {% load static i18n %}
+{% load cache %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,13 +54,15 @@
                         <li class="title">{% trans 'Каталог товарів' %}
                             <img src="{% static 'product/img/sort-down.png' %}" height="15" width="15">
                             <ul class="product">
-                                <ul class="row1">
 
-                                    {% for c in categories %}
-                                        <a href="{% url 'category' c.slug %}">{{ c.name }}</a>
-                                    {% endfor %}
+                                {% cache 60 sidebar %}
+                                    <ul class="row1">
+                                        {% for c in categories %}
+                                            <a href="{% url 'category' c.slug %}">{{ c.name }}</a>
+                                        {% endfor %}
+                                    </ul>
+                                {% endcache %}
 
-                                </ul>
                             </ul>
                         </li>
                     </ul>
@@ -104,9 +108,11 @@
                         <li class="menu-item" onclick="showCategory('category-item', 'triangle')">{% trans 'Категорії' %}<span id="triangle">&#9660;</span>
                             <ul class="category-item" id="category-item">
 
-                                {% for c in categories %}
-                                    <li><a href="{% url 'category' c.slug %}">{{ c.name }}</a></li>
-                                {% endfor %}
+                                {% cache 60 sidebar %}
+                                    {% for c in categories %}
+                                        <li><a href="{% url 'category' c.slug %}">{{ c.name }}</a></li>
+                                    {% endfor %}
+                                {% endcache %}
 
                             </ul>
                         </li>

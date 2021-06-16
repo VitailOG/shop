@@ -4,8 +4,8 @@ from product.models import Product
 
 class ProductFilter(FilterSet):
 
-    title = CharFilter(lookup_expr='icontains')
+    spec__value = CharFilter(lookup_expr='icontains')
 
     class Meta:
         model = Product
-        fields = ['title']
+        fields = ['spec__value']

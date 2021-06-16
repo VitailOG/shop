@@ -3,16 +3,14 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .pagination import ProductPagination
 from .filters import ProductFilter
-# from .serializers import (CategorySerializers,
-#                           ProductSerializers,
-#                           ProductDetailSerializers
-#                           )
 from .serializers import (
     ProductSerializer,
-    ProductDetailSerializer
+    ProductDetailSerializer,
+    ReviewProductSerializer,
+    CategorySerializer
 )
 
-from product.models import Category, Product
+from product.models import Category, Product, Review
 
 
 class ProductAPI(ReadOnlyModelViewSet):
@@ -29,24 +27,9 @@ class ProductAPI(ReadOnlyModelViewSet):
             return ProductDetailSerializer
 
 
-# class CategoryAPI(ModelViewSet):
-#     """ Category
-#     """
-#     serializer_class = CategorySerializers
-#     queryset = Category.objects.all()
+# class ReviewAPI(ModelViewSet):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewProductSerializer
 #
-#
-# class ProductAPI(ReadOnlyModelViewSet):
-#     """ Product
-#     """
-#     queryset = Product.objects.all()
-#     pagination_class = ProductPagination
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_class = ProductFilterAPI
-#
-#     def get_serializer_class(self):
-#         if self.action == "list":
-#             return ProductSerializers
-#         elif self.action == "retrieve":
-#             return ProductDetailSerializers
-
+#     def perform_create(self, serializer):
+#         serializer.save(user=self.request.user)
