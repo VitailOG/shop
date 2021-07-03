@@ -76,7 +76,7 @@ class ProfileView(LoginRequiredMixin, CartMixin, View):
     login_url = reverse_lazy("login")
 
     def get(self, request, *args, **kwargs):
-        # self.test()
+        self.test()
         order = Order.objects.filter(customer=self.customer)\
             .exclude(cart__all_price=None).select_related('cart') \
             .prefetch_related('cart__products__related_cart',
@@ -89,24 +89,24 @@ class ProfileView(LoginRequiredMixin, CartMixin, View):
         }
         return render(request, 'profil/profil.html', context)
 
-    # def test(self):
-    #     today = datetime.date.today()
-    #     new_customer = User.objects.filter(date_joined__month=today.month)
-    #     number_all_product_by_category = Category.objects.annotate(Count('product')).values('name', 'product__count')
-    #     number_of_orders_per_month = Order.objects.filter(order_date__month=today.month)
-
-        # send_mail(
-        #     'Статистика',
-        #     f'Кількість нових покупців -> {new_customer.count()}\n'
-        #     f'Кількість продуктів по категоріям:\n'
-        #     f'\tТелефони -> {number_all_product_by_category[2]["product__count"]}\n'
-        #     f'\tКомп`ютери -> {number_all_product_by_category[1]["product__count"]}\n'
-        #     f'\tНоутбуки -> {number_all_product_by_category[0]["product__count"]}\n'
-        #     f'\tПланшети -> {number_all_product_by_category[3]["product__count"]}\n'
-        #     f'Кількість оформлених замовлень -> {number_of_orders_per_month.aggregate(Count("cart"))["cart__count"]}\n'
-        #     f'Кількість проданих товарів за цей місяць-> '
-        #     f'{number_of_orders_per_month.aggregate(Count("cart__products"))["cart__products__count"]}',
-        #     'vzaharkiv28@gmail.com',
-        #     ['vzaharkiv28@gmail.com'],
-        #     fail_silently=False
-        # )
+    def test(self):
+        today = datetime.date.today()
+        new_customer = User.objects.filter(date_joined__month=today.month)
+        number_all_product_by_category = Category.objects.annotate(Count('product')).values('name', 'product__count')
+        number_of_orders_per_month = Order.objects.filter(order_date__month=today.month)
+        print(number_all_product_by_category)
+        send_mail(
+            'Статистика',
+            f'Кількість нових покупців -> {new_customer.count()}\n'
+            f'Кількість продуктів по категоріям:\n'
+            f'\tПланшети -> {number_all_product_by_category[2]["product__count"]}\n'
+            f'\tТелефони -> {number_all_product_by_category[1]["product__count"]}\n'
+            f'\tКомп`ютери -> {number_all_product_by_category[3]["product__count"]}\n'
+            f'\tНоутбуки -> {number_all_product_by_category[0]["product__count"]}\n'
+            f'Кількість оформлених замовлень -> {number_of_orders_per_month.aggregate(Count("cart"))["cart__count"]}\n'
+            f'Кількість проданих товарів за цей місяць-> '
+            f'{number_of_orders_per_month.aggregate(Count("cart__products"))["cart__products__count"]}',
+            'vzaharkiv28@gmail.com',
+            ['vzaharkiv28@gmail.com'],
+            fail_silently=False
+        )

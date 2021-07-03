@@ -16,7 +16,7 @@ class Category(models.Model):
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return self.name_uk
+        return self.slug
 
     def get_absolute_url(self):
         return reverse('category_detail', kwargs={'slug': self.slug})
@@ -28,7 +28,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     """Модель продуктів"""
-    category = models.ForeignKey(Category, verbose_name="Категорії", on_delete=models.CASCADE, related_name="category")
+    category = models.ForeignKey(Category, verbose_name="Категорії", on_delete=models.CASCADE)
     title = models.CharField(max_length=255, db_index=True, verbose_name="Ім'я")
     slug = models.SlugField(unique=True)
     image = models.ImageField(upload_to='images_product/', verbose_name="Фото", null=True, blank=True)

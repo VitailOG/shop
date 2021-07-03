@@ -30,10 +30,8 @@ class CartMixin(View):
                 )
             self.customer = customer
         else:
-            cart = 0
-            # cart = Cart.objects.filter(for_anonymous_user=True).first()
-            # if not cart:
-            #     cart = Cart.objects.create(for_anonymous_user=True)
+            cart = None
+
         self.cart = cart
         return super().dispatch(request, *args, **kwargs)
 

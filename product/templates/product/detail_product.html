@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load static i18n %}
-
+{% load cache %}
 {% block title %}{{ product.category.name }} - {{ product.title }}{% endblock %}
 
 {% block style %}
@@ -65,7 +65,11 @@
                     <div class="date_product">
                         <div class="charact">
                             <p>{% trans 'Характеристики' %}:</p>
-                            {% include 'product/inc/specification.html' %}
+
+                            {% cache 60 features %}
+                                {% include 'product/inc/specification.html' %}
+                            {% endcache %}
+
                         </div>
                     </div>
                 </div>

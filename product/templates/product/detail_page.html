@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load static i18n %}
-
+{% load cache %}
 {% block title %}{{ category.name }}{% endblock %}
 
 {% block style %}
@@ -46,15 +46,19 @@
             <div class="sidebar">
                 <form action="{% url 'category' category.slug %}" method="get">
                     <input type="text" name="q" class="search" id="search" placeholder="{% trans 'Пошук товару' %}...">
-                    {% if category.slug == "phone" %}
-                        {% include 'product/inc/phone_filter.html' %}
-                    {% elif category.slug == "notebook" %}
-                        {% include 'product/inc/notebook_filter.html' %}
-                    {% elif category.slug == "tablet" %}
-                        {% include 'product/inc/tablet_filter.html' %}
-                    {% elif category.slug == "pc" %}
-                        {% include 'product/inc/pc_filter.html' %}
-                    {% endif %}
+
+                    {% cache 60 filter %}
+                        {% if category.slug == "phone" %}
+                            {% include 'product/inc/phone_filter.html' %}
+                        {% elif category.slug == "notebook" %}
+                            {% include 'product/inc/notebook_filter.html' %}
+                        {% elif category.slug == "tablet" %}
+                            {% include 'product/inc/tablet_filter.html' %}
+                        {% elif category.slug == "pc" %}
+                            {% include 'product/inc/pc_filter.html' %}
+                        {% endif %}
+                    {% endcache %}
+
                     <input type="submit" class="button-search">
                 </form>
             </div>
