@@ -96,7 +96,6 @@ class CategoryDetailView(CommonMixin, CartMixin, DetailView):
 class ProductDetailView(CommonMixin, CartMixin, DetailView):
     """Separate product"""
     model = Product
-    # queryset = Product.objects.select_related('category').prefetch_related('shortimgproduct_set')
     queryset = Product.objects.select_related('category').prefetch_related('mdl')
     template_name = 'product/detail_product.html'
     context_object_name = "product"
@@ -152,7 +151,7 @@ class DeleteFromCartView(CartMixin, View):
     def get(self, request, *args, **kwargs):
         slug_product = kwargs.get('slug')
         product = Product.objects.filter(slug=slug_product).first()
-        cart_product, created = CartProduct.objects.get_or_create(
+        cart_product = CartProduct.objects.get(
             user=self.cart.customer, cart=self.cart, product=product
         )
         self.cart.products.remove(cart_product)

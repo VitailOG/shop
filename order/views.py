@@ -47,7 +47,7 @@ class MakeOrderView(CartMixin, View):
             order.save()
             self.cart.in_order = True
             self.cart.save()
-            # self.calc_quantity_in_stock(self.cart.products.all())
+            self.calc_quantity_in_stock(self.cart.products.all())
             order.cart = self.cart
             order.save()
             self.customer.order.add(order)
