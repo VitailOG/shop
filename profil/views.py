@@ -1,12 +1,8 @@
-import datetime
-
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.core.mail import send_mail
-from django.db.models import Count
 from django.views.generic.base import View
 from django.views.generic import CreateView
 from django.shortcuts import render

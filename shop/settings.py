@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'debug_toolbar',
+    'django_filters',
 
     'product.apps.ProductConfig',
     'order.apps.OrderConfig',

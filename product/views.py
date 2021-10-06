@@ -9,8 +9,10 @@ from django.views import View
 from django.views.generic import DetailView, CreateView
 
 from product.forms import ReviewForm
-from product.mixins import CartMixin, save_cart, CommonMixin
-from product.models import Category, Product, CartProduct, Review, Cart
+from product.mixins import CartMixin, CommonMixin
+from product.models import Category, Product, Review
+from product.services.cart import add_to_cart, save_cart, delete_from_cart, change_count_cart_product, \
+    check_correct_basket
 
 
 class HomeView(CartMixin, View):
@@ -42,7 +44,7 @@ class CategoryDetailView(CommonMixin, CartMixin, DetailView):
 
         context['cart'] = self.cart
         context['q'] = self.get_filter_date()
-        context['name'] = self.get_auto_name()
+        # context['name'] = self.get_auto_name()
 
         if self.find():
             context['find'] = self._page_pagination(self.find())
@@ -64,10 +66,10 @@ class CategoryDetailView(CommonMixin, CartMixin, DetailView):
             return Product.objects.select_related('category').filter(title__istartswith=q,
                                                                      category__slug=self.category_slug)
 
-    def get_auto_name(self):
-        """Автоматичні імена, для пошуку"""
-        qs = Product.objects.filter(category__slug=self.category_slug).values_list('title', flat=True)
-        return list(qs)
+    # def get_auto_name(self):
+    #     """Автоматичні імена, для пошуку"""
+    #     qs = Product.objects.filter(category__slug=self.category_slug).values_list('title', flat=True)
+    #     return list(qs)
 
     def get_filter_date(self):
         """Get link"""
@@ -83,7 +85,7 @@ class CategoryDetailView(CommonMixin, CartMixin, DetailView):
 
     def _page_pagination(self, qs: List[Product]):
         """Pagination"""
-        element = Paginator(qs, 9)
+        element = Paginator(qs, 1)
         page_num = self.request.GET.get('page', 1)
 
         try:
@@ -115,19 +117,10 @@ class CartView(LoginRequiredMixin, CartMixin, View):
 
     def get(self, request, *args, **kwargs):
         context = {
-            'cart': self.check_correct_basket(),
+            'cart': check_correct_basket(self.cart),
             'categories': Category.objects.all()
         }
         return render(request, 'product/cart.html', context)
-
-    def check_correct_basket(self):
-        """This method checks all products for stock"""
-        for i in self.cart.products.all():
-            if i.product.quantity_in_stock == 0:
-                self.cart.products.remove(i)
-                i.delete()
-        save_cart(self.cart)
-        return self.cart
 
 
 class AddToCartView(LoginRequiredMixin, CartMixin, View):
@@ -136,13 +129,7 @@ class AddToCartView(LoginRequiredMixin, CartMixin, View):
 
     def get(self, request, *args, **kwargs):
         slug_product = kwargs.get('slug')
-        product = Product.objects.filter(slug=slug_product).first()
-        cart_product, created = CartProduct.objects.get_or_create(
-            user=self.cart.customer, cart=self.cart, product=product
-        )
-        if created:
-            self.cart.products.add(cart_product)
-        save_cart(self.cart)
+        add_to_cart(slug_product, self.cart.customer, self.cart)
         return redirect('cart')
 
 
@@ -150,13 +137,7 @@ class DeleteFromCartView(CartMixin, View):
     """Delete product basket"""
     def get(self, request, *args, **kwargs):
         slug_product = kwargs.get('slug')
-        product = Product.objects.filter(slug=slug_product).first()
-        cart_product = CartProduct.objects.get(
-            user=self.cart.customer, cart=self.cart, product=product
-        )
-        self.cart.products.remove(cart_product)
-        cart_product.delete()
-        save_cart(self.cart)
+        delete_from_cart(slug_product, self.cart.customer, self.cart)
         return redirect('cart')
 
 
@@ -164,15 +145,7 @@ class ChangeCountView(CartMixin, View):
     """Change quantity"""
     def post(self, request, *args, **kwargs):
         slug_product = kwargs.get('slug')
-        product = Product.objects.filter(slug=slug_product).first()
-        cart_product = CartProduct.objects.get(
-            user=self.cart.customer, cart=self.cart, product=product
-        )
-
-        count = int(request.POST.get('count'))
-        cart_product.count = count
-        cart_product.save()
-        save_cart(self.cart)
+        change_count_cart_product(slug_product, self.cart.customer, self.cart, request.POST.get('count'))
         return redirect('cart')
 
 

@@ -47,7 +47,7 @@
                 <form action="{% url 'category' category.slug %}" method="get">
                     <input type="text" name="q" class="search" id="search" placeholder="{% trans 'Пошук товару' %}...">
 
-                    {% cache 60 filter %}
+{#                    {% cache 60 filter %}#}
                         {% if category.slug == "phone" %}
                             {% include 'product/inc/phone_filter.html' %}
                         {% elif category.slug == "notebook" %}
@@ -57,7 +57,7 @@
                         {% elif category.slug == "pc" %}
                             {% include 'product/inc/pc_filter.html' %}
                         {% endif %}
-                    {% endcache %}
+{#                    {% endcache %}#}
 
                     <input type="submit" class="button-search">
                 </form>

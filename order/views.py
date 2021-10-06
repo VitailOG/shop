@@ -1,10 +1,3 @@
-from io import BytesIO
-
-from django.http import HttpResponse
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-
-from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -14,6 +7,7 @@ from product.mixins import CartMixin
 from product.models import Category
 from .forms import OrderForm
 from .models import Order
+from .services.order import calc_quantity_in_stock
 
 
 class CheckoutView(LoginRequiredMixin, CartMixin, View):
@@ -47,44 +41,11 @@ class MakeOrderView(CartMixin, View):
             order.save()
             self.cart.in_order = True
             self.cart.save()
-            self.calc_quantity_in_stock(self.cart.products.all())
+            calc_quantity_in_stock(self.cart.products.all())
             order.cart = self.cart
             order.save()
             self.customer.order.add(order)
-            return redirect('print')
+            return redirect('/')
         # закоментувати під час запуску тестів
         # messages.error(self.request, 'Дата не може бути раніше сьогоднішньої')
         return redirect('checkout')
-
-    def calc_quantity_in_stock(self, cart_products):
-        for i in cart_products:
-            i.product.quantity_in_stock -= i.count
-            i.product.save()
-
-
-def render_pdf_view(request):
-    order = Order.objects.filter(customer__user=request.user).last()
-    template_path = 'order/receipt.html'
-    context = {'order': order}
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
-    template = get_template(template_path)
-    html = template.render(context)
-    pisa_status = pisa.CreatePDF(BytesIO(html.encode("UTF-8")), dest=response)
-    if pisa_status.err:
-       return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
-
-
-def print_receipt_or_not(request):
-    return render(request, 'order/o.html')
-
-
-class PrintReceiptView(CartMixin, View):
-    """Print receipt"""
-    def get(self, request, *args, **kwargs):
-        data = {
-            "categories": Category.objects.all(),
-            "cart": self.cart
-        }
-        return render(request, 'order/o.html', data)
